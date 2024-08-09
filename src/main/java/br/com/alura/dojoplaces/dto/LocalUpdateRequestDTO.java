@@ -1,0 +1,103 @@
+package br.com.alura.dojoplaces.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+import java.util.Objects;
+
+public class LocalUpdateRequestDTO {
+
+    private Long id;
+
+    @NotBlank
+    @Size(max = 100, message = "Name must have a maximum of 100 characters.")
+    private String name;
+
+    @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Code must not contain special characters or spaces.")
+    @Size(max = 100, message = "Code must have a maximum of 100 characters.")
+    private String code;
+
+    @NotBlank
+    @Size(max = 100, message = "Neighbourhood must have a maximum of 100 characters.")
+    private String neighbourhood;
+
+    @NotBlank
+    @Size(max = 100, message = "City must have a maximum of 100 characters.")
+    private String city;
+
+    private boolean isDirty;
+
+    public LocalUpdateRequestDTO() {
+    }
+
+    public LocalUpdateRequestDTO(String name, String code, String neighborhood, String city) {
+        this.name = name;
+        this.code = code;
+        this.neighbourhood = neighborhood;
+        this.city = city;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotBlank @Size(max = 100, message = "Name must have a maximum of 100 characters.") String getName() {
+        return name;
+    }
+
+    public void setName(@NotBlank @Size(max = 100, message = "Name must have a maximum of 100 characters.") String name) {
+        this.name = name;
+    }
+
+    public @NotBlank @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Code must not contain special characters or spaces.") @Size(max = 100, message = "Code must have a maximum of 100 characters.") String getCode() {
+        return code;
+    }
+
+    public void setCode(@NotBlank @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Code must not contain special characters or spaces.") @Size(max = 100, message = "Code must have a maximum of 100 characters.") String code) {
+        this.code = code;
+    }
+
+    public @NotBlank @Size(max = 100, message = "Neighbourhood must have a maximum of 100 characters.") String getNeighbourhood() {
+        return neighbourhood;
+    }
+
+    public void setNeighbourhood(@NotBlank @Size(max = 100, message = "Neighbourhood must have a maximum of 100 characters.") String neighbourhood) {
+        this.neighbourhood = neighbourhood;
+    }
+
+    public @NotBlank @Size(max = 100, message = "City must have a maximum of 100 characters.") String getCity() {
+        return city;
+    }
+
+    public void setCity(@NotBlank @Size(max = 100, message = "City must have a maximum of 100 characters.") String city) {
+        this.city = city;
+    }
+
+    public void markAsDirty() {
+        this.isDirty = true;
+    }
+
+    public boolean isDirty() {
+        return this.isDirty;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LocalUpdateRequestDTO that = (LocalUpdateRequestDTO) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && Objects.equals(neighbourhood, that.neighbourhood) && Objects.equals(city, that.city);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, code, neighbourhood, city);
+    }
+
+}
