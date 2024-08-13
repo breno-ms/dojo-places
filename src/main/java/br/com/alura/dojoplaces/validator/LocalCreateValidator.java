@@ -29,10 +29,9 @@ public class LocalCreateValidator implements Validator {
         LocalCreateDTO localCreateDTO = (LocalCreateDTO) target;
 
         if (localRepository.existsByCode(localCreateDTO.getCode())) {
-            errors.rejectValue("code", "error.local.already.exists", "Local já existe com este código");
+            errors.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
         }
 
-        // todo: continuar validações
     }
 
 }

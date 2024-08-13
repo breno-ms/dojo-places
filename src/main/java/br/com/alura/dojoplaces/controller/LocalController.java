@@ -60,7 +60,7 @@ public class LocalController {
         boolean localAlreadyExists = localRepository.existsByCode(localCreateDTO.getCode());
 
         if (localAlreadyExists) {
-            bindResult.rejectValue("name", "error.local.already.exists", "Local já existe com este código");
+            bindResult.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
             localCreateDTO.markAsDirty();
             return showRegisterForm(localCreateDTO);
         }

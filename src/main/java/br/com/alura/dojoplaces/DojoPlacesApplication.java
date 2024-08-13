@@ -17,4 +17,5 @@ public class DojoPlacesApplication {
     public static void main(String[] args) {
         SpringApplication.run(DojoPlacesApplication.class, args);
     }
+
 }
