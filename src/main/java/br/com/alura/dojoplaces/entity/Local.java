@@ -1,6 +1,6 @@
 package br.com.alura.dojoplaces.entity;
 
-import br.com.alura.dojoplaces.dto.LocalCreateDTO;
+import br.com.alura.dojoplaces.dto.LocalResponseDTO;
 import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -85,6 +85,17 @@ public class Local {
                 this.getCode(),
                 this.getNeighbourhood(),
                 this.getCity()
+        );
+    }
+
+    public LocalResponseDTO createLocalResponseDto() {
+        return new LocalResponseDTO(
+                this.name,
+                this.code,
+                this.neighbourhood,
+                this.city,
+                this.createdAt,
+                this.updatedAt
         );
     }
 

@@ -41,7 +41,6 @@ class LocalUpdateRequestDTOTest {
         assertEquals(1, bindingResult.getErrorCount(), "Should have one validation error");
         assertEquals("error.local.does.not.exist", Objects.requireNonNull(bindingResult.getFieldError("code")).getCode(), "Error code should match");
         assertEquals("Não existe um local com este código", Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage(), "Error message should match");
-
         verify(localRepository, times(1)).existsByCode(localUpdateRequestDTO.getCode());
     }
 

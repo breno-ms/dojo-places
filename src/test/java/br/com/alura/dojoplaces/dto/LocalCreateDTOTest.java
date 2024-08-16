@@ -38,8 +38,11 @@ class LocalCreateDTOTest {
         localCreateValidator.validate(localCreateDTO, bindingResult);
 
         assertFalse(bindingResult.hasErrors(), "Should not have any validation errors");
-
         verify(localRepository, times(1)).existsByCode(localCreateDTO.getCode());
+
+        // TODO: verificar se os errors do validador foram encontrados no binding result:
+        verify(localRepository, times(1)).existsByCode(localCreateDTO.getCode());
+        verify(bindingResult, times(0)).rejectValue(anyString(), anyString(), anyString());
     }
 
     @Test
@@ -55,8 +58,10 @@ class LocalCreateDTOTest {
                 Objects.requireNonNull(bindingResult.getFieldError("code")).getCode(), "Error code should match");
         assertEquals("Já existe um local com este código",
                 Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage(), "Error message should match");
-
         verify(localRepository, times(1)).existsByCode(localCreateDTO.getCode());
+
+        // TODO: verificar se os errors do validador foram encontrados no binding result:
+        verify(bindingResult, times(1)).rejectValue(eq("code"), eq("error.local.already.exists"), eq("Já existe um local com este código"));
     }
 
 }

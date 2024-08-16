@@ -1,17 +1,18 @@
 package br.com.alura.dojoplaces.controller;
 
 import br.com.alura.dojoplaces.dto.LocalCreateDTO;
+import br.com.alura.dojoplaces.dto.LocalResponseDTO;
 import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
 import br.com.alura.dojoplaces.entity.Local;
 import br.com.alura.dojoplaces.exception.NotFoundException;
 import br.com.alura.dojoplaces.repository.LocalRepository;
-import br.com.alura.dojoplaces.validator.LocalCreateValidator;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -47,6 +48,7 @@ public class LocalController {
 
         model.addAttribute("localId", localId);
         model.addAttribute("localUpdateDTO", form);
+
         return "/local/updateLocalForm";
     }
 
@@ -83,6 +85,27 @@ public class LocalController {
         localRepository.save(existingLocal);
 
         return "redirect:/form/update/" + localId;
+    }
+
+    @GetMapping("/list")
+    public String showList(Model model) {
+        // todo: deveria ter paginação?
+        List<Local> locals = localRepository.findAll();
+        List<LocalResponseDTO> localsDtos = locals.stream().map(Local::createLocalResponseDto).toList();
+
+        model.addAttribute("locais", localsDtos);
+
+        return "/local/listLocal";
+    }
+
+    @DeleteMapping("/list")
+    public String deleteLocal(@RequestParam Long localId) {
+        // todo: request param?
+        // todo: verificar possíveis erros
+        // todo: verificar se local existe
+        localRepository.deleteById(localId);
+
+        return "redirect:/local/listLocal";
     }
 
 }
