@@ -6,10 +6,13 @@ import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
 import br.com.alura.dojoplaces.entity.Local;
 import br.com.alura.dojoplaces.exception.NotFoundException;
 import br.com.alura.dojoplaces.repository.LocalRepository;
+import br.com.alura.dojoplaces.validator.LocalCreateValidator;
+import br.com.alura.dojoplaces.validator.LocalUpdateValidator;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +23,23 @@ import java.util.Optional;
 public class LocalController {
 
     private final LocalRepository localRepository;
+    private final LocalCreateValidator localCreateValidator;
+    private final LocalUpdateValidator localUpdateValidator;
 
-    public LocalController(LocalRepository localRepository) {
+    public LocalController(LocalRepository localRepository, LocalCreateValidator localCreateValidator, LocalUpdateValidator localUpdateValidator) {
         this.localRepository = localRepository;
+        this.localCreateValidator = localCreateValidator;
+        this.localUpdateValidator = localUpdateValidator;
+    }
+
+    @InitBinder("localCreateDTO")
+    public void initCreateBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(localCreateValidator);
+    }
+
+    @InitBinder("localUpdateRequestDTO")
+    public void initUpdateBinder(WebDataBinder webDataBinder) {
+        webDataBinder.addValidators(localUpdateValidator);
     }
 
     @GetMapping("/create")
@@ -35,7 +52,7 @@ public class LocalController {
     }
 
     @GetMapping("/update/{localId}")
-    public String showUpdateForm(@PathVariable Long localId, LocalUpdateRequestDTO form, Model model) {
+    public String showUpdateForm(@PathVariable Long localId, LocalUpdateRequestDTO form, BindingResult bindingResult, Model model) {
         Optional<Local> existingLocal = localRepository.findById(localId);
 
         if (existingLocal.isEmpty()) {
@@ -47,7 +64,7 @@ public class LocalController {
         }
 
         model.addAttribute("localId", localId);
-        model.addAttribute("localUpdateDTO", form);
+        model.addAttribute("localUpdateRequestDTO", form);
 
         return "/local/updateLocalForm";
     }
@@ -77,7 +94,7 @@ public class LocalController {
     public String editForm(@Valid LocalUpdateRequestDTO localUpdateDTO, BindingResult bindingResult, @PathVariable Long localId, Model model) {
         if (bindingResult.hasErrors()) {
             localUpdateDTO.markAsDirty();
-            return showUpdateForm(localId, localUpdateDTO, model);
+            return showUpdateForm(localId, localUpdateDTO, bindingResult, model);
         }
 
         Local existingLocal = localRepository.findById(localId).orElseThrow(NotFoundException::new);
@@ -98,14 +115,13 @@ public class LocalController {
         return "/local/listLocal";
     }
 
-    @DeleteMapping("/list")
+    @PostMapping("/delete")
     public String deleteLocal(@RequestParam Long localId) {
-        // todo: request param?
-        // todo: verificar possíveis erros
-        // todo: verificar se local existe
-        localRepository.deleteById(localId);
+        if (localRepository.existsById(localId)) {
+            localRepository.deleteById(localId);
+        }
 
-        return "redirect:/local/listLocal";
+        return "redirect:/form/list";
     }
 
 }

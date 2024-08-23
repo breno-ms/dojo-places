@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class LocalResponseDTO {
 
+    private Long id;
     private String name;
     private String code;
     private String neighbourhood;
@@ -16,61 +17,42 @@ public class LocalResponseDTO {
     public LocalResponseDTO() {
     }
 
-    public LocalResponseDTO(String name, String code, String neighbourhood, String city, LocalDate createdAt, LocalDate updatedAt) {
+    public LocalResponseDTO(Long id, String name, String code, String neighbourhood, String city, LocalDate createdAt, LocalDate updatedAt) {
+        this.id = id;
         this.name = name;
         this.code = code;
         this.neighbourhood = neighbourhood;
         this.city = city;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getCode() {
         return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getNeighbourhood() {
         return neighbourhood;
     }
 
-    public void setNeighbourhood(String neighbourhood) {
-        this.neighbourhood = neighbourhood;
-    }
-
     public String getCity() {
         return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDate getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

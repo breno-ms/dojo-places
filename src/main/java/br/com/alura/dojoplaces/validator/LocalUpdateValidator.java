@@ -1,7 +1,6 @@
 package br.com.alura.dojoplaces.validator;
 
 import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
-import br.com.alura.dojoplaces.dto.LocalUpdateResponseDTO;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -18,7 +17,7 @@ public class LocalUpdateValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return LocalUpdateResponseDTO.class.equals(clazz);
+        return LocalUpdateRequestDTO.class.equals(clazz);
     }
 
     @Override
@@ -28,10 +27,13 @@ public class LocalUpdateValidator implements Validator {
         }
 
         LocalUpdateRequestDTO localUpdateRequestDTO = (LocalUpdateRequestDTO) target;
+        String code = localUpdateRequestDTO.getCode();
+        Long id = localUpdateRequestDTO.getId();
 
-        if (!localRepository.existsByCode(localUpdateRequestDTO.getCode())) {
-            errors.rejectValue("code", "error.local.does.not.exist", "Não existe um local com este código");
+        if (localRepository.findByCodeAndIdNot(code, id).isPresent()) {
+            errors.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
         }
+
     }
 
 }

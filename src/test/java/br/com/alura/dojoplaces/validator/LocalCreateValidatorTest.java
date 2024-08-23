@@ -28,7 +28,7 @@ class LocalCreateValidatorTest {
     }
 
     @Test
-    void validate__no_errors() {
+    void validate__should_pass_validation_when_code_is_unique() {
         String uniqueCode = "123456";
 
         LocalCreateDTO localCreateDTO = new LocalCreateDTO();
@@ -42,7 +42,7 @@ class LocalCreateValidatorTest {
     }
 
     @Test
-    void validate__local_already_exists() {
+    void validate__should_reject_validation_when_code_already_exists() {
         String duplicateCode = "123456";
 
         LocalCreateDTO localCreateDTO = new LocalCreateDTO();

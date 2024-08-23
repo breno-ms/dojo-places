@@ -26,12 +26,18 @@
             <span id="city">${local.city}</span>
         </div>
         <div>
-            <label for="city"><strong>Data de criação:</strong></label>
+            <label for="createdAt"><strong>Data de criação:</strong></label>
             <span id="createdAt">${local.createdAt}</span>
         </div>
         <div>
-            <label for="city"><strong>Data de atualização:</strong></label>
+            <label for="updatedAt"><strong>Data de atualização:</strong></label>
             <span id="updatedAt">${local.updatedAt}</span>
+        </div>
+        <div>
+            <form action="${pageContext.request.contextPath}/form/delete" method="post" onsubmit=" return confirm('Você realmente deseja deletar este local?');">
+                <input type="hidden" name="localId" value="${local.id}" />
+                <button type="submit">Deletar</button>
+            </form>
         </div>
         <hr/>
     </c:forEach>

@@ -35,6 +35,10 @@ public class Local {
         this.createdAt = LocalDate.now();
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -49,6 +53,10 @@ public class Local {
 
     public String getCity() {
         return city;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -90,6 +98,7 @@ public class Local {
 
     public LocalResponseDTO createLocalResponseDto() {
         return new LocalResponseDTO(
+                this.id,
                 this.name,
                 this.code,
                 this.neighbourhood,

@@ -32,63 +32,40 @@ class LocalUpdateValidatorTest {
     }
 
     @Test
-    void validate__no_errors() {
-        String validCode = "123456";
+    void validate__should_pass_validation_when_code_is_unique_or_same_record() {
+        String code = "123456";
+        Long updateId = 1L;
 
         LocalUpdateRequestDTO localUpdateDTO = new LocalUpdateRequestDTO();
-        localUpdateDTO.setCode(validCode);
+        localUpdateDTO.setCode(code);
+        localUpdateDTO.setId(updateId);
 
-        when(localRepository.existsByCode(localUpdateDTO.getCode())).thenReturn(true);
+        when(localRepository.findByCodeAndIdNot(code, updateId)).thenReturn(Optional.empty());
 
         localUpdateValidator.validate(localUpdateDTO, errors);
 
-        verify(localRepository, times(1)).existsByCode(localUpdateDTO.getCode());
+        verify(errors, never()).rejectValue(anyString(), anyString(), anyString());
     }
 
     @Test
-    void validate__local_does_not_exist() {
-        String invalidCode = "123456";
+    void validate__should_reject_validation_when_code_already_exists_for_different_record() {
+        String code = "123456";
+        Long updateId = 1L;
+        Long existingId = 2L;
 
         LocalUpdateRequestDTO localUpdateDTO = new LocalUpdateRequestDTO();
-        localUpdateDTO.setCode(invalidCode);
-
-        when(localRepository.existsByCode(localUpdateDTO.getCode())).thenReturn(false);
-
-        localUpdateValidator.validate(localUpdateDTO, errors);
-
-        verify(errors).rejectValue("code", "error.local.does.not.exist", "Não existe um local com este código");
-    }
-
-    @Test
-    void updateLocal__success() {
-        String existingCode = "123456";
-
-        LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO();
-        localUpdateRequestDTO.setCode(existingCode);
-        localUpdateRequestDTO.setName("Updated Name");
+        localUpdateDTO.setCode(code);
+        localUpdateDTO.setId(updateId);
 
         Local existingLocal = new Local();
-        existingLocal.setCode(existingCode);
-        existingLocal.setName("Old Name");
+        existingLocal.setId(existingId);
+        existingLocal.setCode(code);
 
-        when(localRepository.findByCode(existingCode)).thenReturn(Optional.of(existingLocal));
+        when(localRepository.findByCodeAndIdNot(code, updateId)).thenReturn(Optional.of(existingLocal));
 
-        when(localRepository.save(any(Local.class))).thenAnswer(invocation -> {
-            Local updatedLocal = invocation.getArgument(0);
-            existingLocal.setName(updatedLocal.getName());
-            return existingLocal;
-        });
+        localUpdateValidator.validate(localUpdateDTO, errors);
 
-        Local localToUpdate = localRepository.findByCode(existingCode).orElseThrow();
-        localToUpdate.setName(localUpdateRequestDTO.getName());
-        localRepository.save(localToUpdate);
-
-        assertThat(localToUpdate.getName()).isEqualTo("Updated Name");
-
-        verify(localRepository).save(argThat(local ->
-                local.getCode().equals(existingCode) &&
-                        local.getName().equals("Updated Name")
-        ));
+        verify(errors).rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
     }
 
 }
