@@ -35,6 +35,14 @@ public class Local {
         this.createdAt = LocalDate.now();
     }
 
+    public Local(Long id, String name, String code, String neighbourhood, String city) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.neighbourhood = neighbourhood;
+        this.city = city;
+    }
+
     public Long getId() {
         return id;
     }

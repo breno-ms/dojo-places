@@ -15,7 +15,6 @@ public class LocalCreateDTO {
     @Size(max = 100, message = "Name must have a maximum of 100 characters.")
     private String name;
 
-    // TODO: criar teste para a regex:
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Code must not contain special characters or spaces.")
     @Size(max = 100, message = "Code must have a maximum of 100 characters.")

@@ -1,5 +1,6 @@
 package br.com.alura.dojoplaces.dto;
 
+import br.com.alura.dojoplaces.entity.Local;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import br.com.alura.dojoplaces.validator.LocalUpdateValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +11,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
-import java.util.Objects;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class LocalUpdateRequestDTOTest {
@@ -31,30 +31,41 @@ class LocalUpdateRequestDTOTest {
 
     @Test
     public void localUpdateForm__when_local_does_not_exist_by_code() {
-        LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO("Name", "Code", "Neighbourhood", "City");
+        LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO(
+                "Name",
+                "Code",
+                "Neighbourhood",
+                "City");
+
         BindingResult bindingResult = new BeanPropertyBindingResult(localUpdateRequestDTO, "localUpdateRequestDTO");
 
-        when(localRepository.existsByCode(localUpdateRequestDTO.getCode())).thenReturn(false);
+        when(localRepository.findByCodeAndIdNot(localUpdateRequestDTO.getCode(), localUpdateRequestDTO.getId())).thenReturn(Optional.empty());
 
         localUpdateValidator.validate(localUpdateRequestDTO, bindingResult);
 
-        assertEquals(1, bindingResult.getErrorCount(), "Should have one validation error");
-        assertEquals("error.local.does.not.exist", Objects.requireNonNull(bindingResult.getFieldError("code")).getCode(), "Error code should match");
-        assertEquals("Não existe um local com este código", Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage(), "Error message should match");
-        verify(localRepository, times(1)).existsByCode(localUpdateRequestDTO.getCode());
+        assertFalse(bindingResult.hasErrors(), "Should not have validation errors");
+
+        verify(localRepository, times(1)).findByCodeAndIdNot(localUpdateRequestDTO.getCode(), localUpdateRequestDTO.getId());
     }
 
     @Test
     public void localUpdateForm__when_local_does_exist_by_code() {
-        LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO("Name", "Code", "Neighbourhood", "City");
+        LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO(
+                "Name",
+                "Code",
+                "Neighbourhood",
+                "City");
+
         BindingResult bindingResult = new BeanPropertyBindingResult(localUpdateRequestDTO, "localUpdateRequestDTO");
 
-        when(localRepository.existsByCode(localUpdateRequestDTO.getCode())).thenReturn(true);
+        when(localRepository.findByCodeAndIdNot(localUpdateRequestDTO.getCode(), localUpdateRequestDTO.getId())).thenReturn(Optional.of(new Local()));
 
         localUpdateValidator.validate(localUpdateRequestDTO, bindingResult);
 
-        assertFalse(bindingResult.hasErrors(), "Should not have any validation errors");
-        verify(localRepository, times(1)).existsByCode(localUpdateRequestDTO.getCode());
+        assertTrue(bindingResult.hasErrors(), "Should have validation errors");
+        assertEquals("Já existe um local com este código", bindingResult.getFieldError("code").getDefaultMessage());
+
+        verify(localRepository, times(1)).findByCodeAndIdNot(localUpdateRequestDTO.getCode(), localUpdateRequestDTO.getId());
     }
 
 }

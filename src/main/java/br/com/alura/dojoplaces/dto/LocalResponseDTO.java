@@ -27,6 +27,13 @@ public class LocalResponseDTO {
         this.updatedAt = updatedAt;
     }
 
+    public LocalResponseDTO(Long id, String name, String cpde, String city, String neighbourhood) {
+        this.id = id;
+        this.name = name;
+        this.code = cpde;
+        this.neighbourhood = neighbourhood;
+    }
+
     public Long getId() {
         return id;
     }

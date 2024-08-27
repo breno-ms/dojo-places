@@ -28,6 +28,14 @@ public class LocalCreateValidator implements Validator {
 
         LocalCreateDTO localCreateDTO = (LocalCreateDTO) target;
 
+        if (!localCreateDTO.getCode().matches("^[a-zA-Z0-9]*$")) {
+            errors.rejectValue("code", "error.code.invalid", "Code must not contain special characters or spaces.");
+        }
+
+        if (localCreateDTO.getCode().length() > 100) {
+            errors.rejectValue("code", "error.code.too.long", "Code must have a maximum of 100 characters.");
+        }
+
         if (localRepository.existsByCode(localCreateDTO.getCode())) {
             errors.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
         }

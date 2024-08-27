@@ -106,7 +106,6 @@ public class LocalController {
 
     @GetMapping("/list")
     public String showList(Model model) {
-        // todo: deveria ter paginação?
         List<Local> locals = localRepository.findAll();
         List<LocalResponseDTO> localsDtos = locals.stream().map(Local::createLocalResponseDto).toList();
 
