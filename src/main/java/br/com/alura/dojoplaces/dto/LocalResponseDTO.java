@@ -1,5 +1,7 @@
 package br.com.alura.dojoplaces.dto;
 
+import br.com.alura.dojoplaces.entity.Local;
+
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -27,11 +29,14 @@ public class LocalResponseDTO {
         this.updatedAt = updatedAt;
     }
 
-    public LocalResponseDTO(Long id, String name, String cpde, String city, String neighbourhood) {
-        this.id = id;
-        this.name = name;
-        this.code = cpde;
-        this.neighbourhood = neighbourhood;
+    public LocalResponseDTO(Local local) {
+        this.id = local.getId();
+        this.name = local.getName();
+        this.code = local.getCode();
+        this.neighbourhood = local.getNeighbourhood();
+        this.city = local.getCity();
+        this.createdAt = local.getCreatedAt();
+        this.updatedAt = local.getUpdatedAt();
     }
 
     public Long getId() {

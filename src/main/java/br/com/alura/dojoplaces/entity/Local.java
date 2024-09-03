@@ -35,14 +35,6 @@ public class Local {
         this.createdAt = LocalDate.now();
     }
 
-    public Local(Long id, String name, String code, String neighbourhood, String city) {
-        this.id = id;
-        this.name = name;
-        this.code = code;
-        this.neighbourhood = neighbourhood;
-        this.city = city;
-    }
-
     public Long getId() {
         return id;
     }
@@ -51,42 +43,47 @@ public class Local {
         return name;
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getNeighbourhood() {
-        return neighbourhood;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public void setCode(String code) {
         this.code = code;
     }
 
+    public String getNeighbourhood() {
+        return neighbourhood;
+    }
+
     public void setNeighbourhood(String neighbourhood) {
         this.neighbourhood = neighbourhood;
+    }
+
+    public String getCity() {
+        return city;
     }
 
     public void setCity(String city) {
         this.city = city;
     }
 
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
+
     public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
     }
 
+    // todo: remover setters e modificar método abaixo para receber os argumentos individualmente
     public void updateFromDTO(LocalUpdateRequestDTO localCreateDTO) {
         this.setName(localCreateDTO.getName());
         this.setCode(localCreateDTO.getCode());

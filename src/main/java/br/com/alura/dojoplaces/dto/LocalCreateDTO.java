@@ -40,12 +40,13 @@ public class LocalCreateDTO {
         this.city = city;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public Local toModel() {
+        return new Local(
+                this.name,
+                this.code,
+                this.neighbourhood,
+                this.city
+        );
     }
 
     public @NotBlank @Size(max = 100, message = "Name must have a maximum of 100 characters.") String getName() {

@@ -59,7 +59,6 @@ class LocalUpdateValidatorTest {
         localUpdateDTO.setId(updateId);
 
         Local existingLocal = new Local();
-        existingLocal.setId(existingId);
         existingLocal.setCode(code);
 
         when(localRepository.findByCodeAndIdNot(code, updateId)).thenReturn(Optional.of(existingLocal));

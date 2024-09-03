@@ -70,31 +70,31 @@ public class LocalController {
     }
 
     @PostMapping("/create")
-    public String submitForm(@Valid LocalCreateDTO localCreateDTO, BindingResult bindResult) {
-        if (bindResult.hasErrors()) {
+    public String submitForm(@Valid LocalCreateDTO localCreateDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             localCreateDTO.markAsDirty();
-            return showRegisterForm(localCreateDTO);
+            return "redirect:/form/create";
         }
 
         boolean localAlreadyExists = localRepository.existsByCode(localCreateDTO.getCode());
 
         if (localAlreadyExists) {
-            bindResult.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
+            bindingResult.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
             localCreateDTO.markAsDirty();
-            return showRegisterForm(localCreateDTO);
+            return "redirect:/form/create";
         }
 
-        Local local = localCreateDTO.createLocalFromDTO();
+        Local local = localCreateDTO.toModel();
         localRepository.save(local);
 
-        return "redirect:/form/create";
+        return "redirect:/form/list";
     }
 
     @PostMapping("/update/{localId}")
-    public String editForm(@Valid LocalUpdateRequestDTO localUpdateDTO, BindingResult bindingResult, @PathVariable Long localId, Model model) {
-        if (bindingResult.hasErrors()) {
+    public String editForm(@Valid LocalUpdateRequestDTO localUpdateDTO, BindingResult bindResult, @PathVariable Long localId, Model model) {
+        if (bindResult.hasErrors()) {
             localUpdateDTO.markAsDirty();
-            return showUpdateForm(localId, localUpdateDTO, bindingResult, model);
+            return showUpdateForm(localId, localUpdateDTO, bindResult, model);
         }
 
         Local existingLocal = localRepository.findById(localId).orElseThrow(NotFoundException::new);
@@ -107,7 +107,7 @@ public class LocalController {
     @GetMapping("/list")
     public String showList(Model model) {
         List<Local> locals = localRepository.findAll();
-        List<LocalResponseDTO> localsDtos = locals.stream().map(Local::createLocalResponseDto).toList();
+        List<LocalResponseDTO> localsDtos = locals.stream().map(LocalResponseDTO::new).toList();
 
         model.addAttribute("locais", localsDtos);
 

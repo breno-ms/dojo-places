@@ -22,6 +22,7 @@ import org.springframework.web.bind.WebDataBinder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,22 +59,14 @@ public class LocalControllerTest {
     @Test
     @DisplayName("Should show the list of locals successfully")
     public void showList__should_show_list_of_locals_successfully() throws Exception {
-        Local local1 = new Local();
-        Local local2 = new Local();
+        localRepository.save(new Local("Name", "123", "Neighbourhood", "City"));
 
-        List<Local> locals = List.of(local1, local2);
-
-        when(localRepository.findAll()).thenReturn(locals);
-
-        LocalResponseDTO dto1 = local1.createLocalResponseDto();
-        LocalResponseDTO dto2 = local2.createLocalResponseDto();
-
-        List<LocalResponseDTO> localsDtos = List.of(dto1, dto2);
+        List<LocalResponseDTO> locals = localRepository.findAll().stream().map(LocalResponseDTO::new).collect(Collectors.toList());
 
         mockMvc.perform(get("/form/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("/local/listLocal"))
-                .andExpect(model().attribute("locais", localsDtos));
+                .andExpect(model().attribute("locais", locals));
 
         verify(localRepository).findAll();
     }
@@ -101,7 +94,7 @@ public class LocalControllerTest {
 
         mockMvc.perform(mockHttpServletRequestBuilder)
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/form/create"));
+                .andExpect(redirectedUrl("/form/list"));
 
         verify(localRepository, times(1)).save(any(Local.class));
     }
@@ -117,8 +110,8 @@ public class LocalControllerTest {
                 .param("neighbourhood", "Neighbourhood");
 
         mockMvc.perform(mockHttpServletRequestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(view().name("/local/registerLocalForm"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/form/update"))
                 .andExpect(model().attributeHasFieldErrors("localCreateDTO", "code"));
     }
 
@@ -187,8 +180,8 @@ public class LocalControllerTest {
                 .param("neighbourhood", "Neighbourhood");
 
         mockMvc.perform(mockHttpServletRequestBuilder)
-                .andExpect(status().isOk())
-                .andExpect(view().name("/local/updateLocalForm"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("form/update"))
                 .andExpect(model().attributeHasFieldErrors("localUpdateRequestDTO", "code"));
     }
 
