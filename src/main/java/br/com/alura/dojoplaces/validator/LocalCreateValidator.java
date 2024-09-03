@@ -39,7 +39,6 @@ public class LocalCreateValidator implements Validator {
         if (localRepository.existsByCode(localCreateDTO.getCode())) {
             errors.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
         }
-
     }
 
 }

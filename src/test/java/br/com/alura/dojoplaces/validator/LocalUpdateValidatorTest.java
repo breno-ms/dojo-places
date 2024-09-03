@@ -12,7 +12,6 @@ import org.springframework.validation.Errors;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class LocalUpdateValidatorTest {
@@ -30,6 +29,8 @@ class LocalUpdateValidatorTest {
         MockitoAnnotations.openMocks(this);
         errors = mock(Errors.class);
     }
+
+    // TODO: adicionar display names
 
     @Test
     void validate__should_pass_validation_when_code_is_unique_or_same_record() {

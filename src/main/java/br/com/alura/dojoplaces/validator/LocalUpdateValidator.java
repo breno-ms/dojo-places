@@ -33,7 +33,6 @@ public class LocalUpdateValidator implements Validator {
         if (localRepository.findByCodeAndIdNot(code, id).isPresent()) {
             errors.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
         }
-
     }
 
 }

@@ -29,7 +29,7 @@ class LocalCreateDTOTest {
     }
 
     @Test
-    public void localCreateForm__when_local_does_not_exist_by_code() {
+    public void localCreateForm__should_create_when_local_does_not_exist_by_code() {
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
 
@@ -41,7 +41,7 @@ class LocalCreateDTOTest {
     }
 
     @Test
-    public void localCreateForm__when_local_already_exists_by_code() {
+    public void localCreateForm__should_have_errors_when_local_already_exists_by_code() {
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
 
@@ -50,22 +50,24 @@ class LocalCreateDTOTest {
         localCreateValidator.validate(localCreateDTO, bindingResult);
 
         assertTrue(bindingResult.hasErrors(), "Should have validation errors");
-        assertEquals("Já existe um local com este código", Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage());
+        assertEquals("Já existe um local com este código",
+                Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage());
     }
 
     @Test
-    public void localCreateForm__when_code_contains_special_characters() {
+    public void localCreateForm__should_have_errors_when_code_contains_special_characters() {
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Invalid@Code!", "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
 
         localCreateValidator.validate(localCreateDTO, bindingResult);
 
         assertTrue(bindingResult.hasErrors(), "Should have validation errors");
-        assertEquals("Code must not contain special characters or spaces.", Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage());
+        assertEquals("Code must not contain special characters or spaces.",
+                Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage());
     }
 
     @Test
-    public void localCreateForm__when_code_is_too_long() {
+    public void localCreateForm__should_have_errors_when_code_is_too_long() {
         String longCode = "A".repeat(101);
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", longCode, "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
@@ -73,7 +75,8 @@ class LocalCreateDTOTest {
         localCreateValidator.validate(localCreateDTO, bindingResult);
 
         assertTrue(bindingResult.hasErrors(), "Should have validation errors");
-        assertEquals("Code must have a maximum of 100 characters.", Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage());
+        assertEquals("Code must have a maximum of 100 characters.",
+                Objects.requireNonNull(bindingResult.getFieldError("code")).getDefaultMessage());
     }
 
 }
