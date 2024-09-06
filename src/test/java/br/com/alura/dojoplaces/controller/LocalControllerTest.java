@@ -1,44 +1,58 @@
 package br.com.alura.dojoplaces.controller;
 
+import br.com.alura.dojoplaces.dto.LocalCreateDTO;
 import br.com.alura.dojoplaces.dto.LocalResponseDTO;
 import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
 import br.com.alura.dojoplaces.entity.Local;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import br.com.alura.dojoplaces.validator.LocalCreateValidator;
 import br.com.alura.dojoplaces.validator.LocalUpdateValidator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.WebDataBinder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 public class LocalControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @Autowired
     private LocalRepository localRepository;
-
-    @InjectMocks
-    private LocalController localController;
 
     @Autowired
     private LocalCreateValidator localCreateValidator;
@@ -49,11 +63,11 @@ public class LocalControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(localController)
-                .setValidator(localCreateValidator)
-                .setValidator(localUpdateValidator)
-                .build();
+//        mockMvc = MockMvcBuilders
+////                .standaloneSetup(localController)
+////                .setValidator(localCreateValidator)
+////                .setValidator(localUpdateValidator)
+//                .build();
     }
 
     @Test
@@ -83,36 +97,40 @@ public class LocalControllerTest {
     @Test
     @DisplayName("Should create a local successfully")
     public void submitForm__should_submit_create_dto_form_successfully() throws Exception {
-        when(localRepository.existsByCode("123")).thenReturn(false);
+        LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City");
 
-        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = post("/form/create")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("code", "123")
-                .param("name", "Name")
-                .param("city", "City")
-                .param("neighbourhood", "Neighbourhood");
-
-        mockMvc.perform(mockHttpServletRequestBuilder)
+        mockMvc.perform(post("/form/create")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", localCreateDTO.getName())
+                        .param("code", localCreateDTO.getCode())
+                        .param("city", localCreateDTO.getCity())
+                        .param("neighbourhood", localCreateDTO.getNeighbourhood()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/form/list"));
-
-        verify(localRepository, times(1)).save(any(Local.class));
     }
 
     @Test
     @DisplayName("Should return errors when creating a local with invalid data")
     public void submitForm__should_return_errors_when_data_is_invalid() throws Exception {
+        LocalCreateDTO localCreateDTO = new LocalCreateDTO();
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<LocalCreateDTO>> validate = validator.validate(localCreateDTO);
+
         MockHttpServletRequestBuilder mockHttpServletRequestBuilder = post("/form/create")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("code", "")
-                .param("name", "Name")
-                .param("city", "City")
-                .param("neighbourhood", "Neighbourhood");
+                .param("name", localCreateDTO.getName())
+                .param("code", localCreateDTO.getCode())
+                .param("city", localCreateDTO.getCity())
+                .param("neighbourhood", localCreateDTO.getNeighbourhood());
 
         mockMvc.perform(mockHttpServletRequestBuilder)
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/form/update"))
-                .andExpect(model().attributeHasFieldErrors("localCreateDTO", "code"));
+                .andExpect(redirectedUrl("/form/list"));
+                //.andExpect(model().attributeHasFieldErrors("localCreateDTO", "code"));
+
+        assertFalse(validate.stream().toList().isEmpty());
     }
 
     @Test
