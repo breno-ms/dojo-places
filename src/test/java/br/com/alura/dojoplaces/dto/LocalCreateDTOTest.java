@@ -3,6 +3,7 @@ package br.com.alura.dojoplaces.dto;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import br.com.alura.dojoplaces.validator.LocalCreateValidator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,6 +30,7 @@ class LocalCreateDTOTest {
     }
 
     @Test
+    @DisplayName("Should create without errors when local does not exist by code")
     public void localCreateForm__should_create_when_local_does_not_exist_by_code() {
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
@@ -41,6 +43,7 @@ class LocalCreateDTOTest {
     }
 
     @Test
+    @DisplayName("Should have errors when local already exists by code")
     public void localCreateForm__should_have_errors_when_local_already_exists_by_code() {
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
@@ -55,6 +58,7 @@ class LocalCreateDTOTest {
     }
 
     @Test
+    @DisplayName("Should have errors when code contains special characters")
     public void localCreateForm__should_have_errors_when_code_contains_special_characters() {
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Invalid@Code!", "Neighbourhood", "City");
         BindingResult bindingResult = new BeanPropertyBindingResult(localCreateDTO, "localCreateDTO");
@@ -67,6 +71,7 @@ class LocalCreateDTOTest {
     }
 
     @Test
+    @DisplayName("Should have errors when code have more than 100 characters")
     public void localCreateForm__should_have_errors_when_code_is_too_long() {
         String longCode = "A".repeat(101);
         LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", longCode, "Neighbourhood", "City");

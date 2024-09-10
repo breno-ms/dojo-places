@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +18,7 @@ public class LocalRepositoryTest {
     private LocalRepository localRepository;
 
     @Test
-    @DisplayName("Should test successfully the memory database setup")
+    @DisplayName("Should test the memory database setup")
     public void testDatabaseSetup() {
         assertNotNull(localRepository);
 

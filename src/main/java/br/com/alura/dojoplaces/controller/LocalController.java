@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,19 +52,20 @@ public class LocalController {
     }
 
     @GetMapping("/update/{localId}")
-    public String showUpdateForm(@PathVariable Long localId, LocalUpdateRequestDTO form, BindingResult bindingResult, Model model) {
+    public String showUpdateForm(@PathVariable Long localId, LocalUpdateRequestDTO localUpdateRequestDTO, BindingResult bindingResult, Model model) {
         Optional<Local> existingLocal = localRepository.findById(localId);
 
         if (existingLocal.isEmpty()) {
             return "/error/404";
         }
 
-        if (!form.isDirty()) {
-            form = existingLocal.get().createLocalUpdateRequestDto();
+        if (!localUpdateRequestDTO.isDirty()) {
+            localUpdateRequestDTO = existingLocal.get().createLocalUpdateRequestDto();
         }
 
         model.addAttribute("localId", localId);
-        model.addAttribute("localUpdateRequestDTO", form);
+        model.addAttribute("localUpdateRequestDTO", localUpdateRequestDTO);
+        model.addAttribute("bindingResult", bindingResult);
 
         return "/local/updateLocalForm";
     }
@@ -74,7 +74,7 @@ public class LocalController {
     public String submitForm(@Valid LocalCreateDTO localCreateDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             localCreateDTO.markAsDirty();
-            return "redirect:/form/create";
+            return showRegisterForm(localCreateDTO);
         }
 
         boolean localAlreadyExists = localRepository.existsByCode(localCreateDTO.getCode());
@@ -82,7 +82,7 @@ public class LocalController {
         if (localAlreadyExists) {
             bindingResult.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
             localCreateDTO.markAsDirty();
-            return "redirect:/form/create";
+            return showRegisterForm(localCreateDTO);
         }
 
         Local local = localCreateDTO.toModel();
@@ -92,10 +92,12 @@ public class LocalController {
     }
 
     @PostMapping("/update/{localId}")
-    public String editForm(@Valid LocalUpdateRequestDTO localUpdateDTO, BindingResult bindResult, @PathVariable Long localId, Model model) {
-        if (bindResult.hasErrors()) {
+    public String editForm(@Valid LocalUpdateRequestDTO localUpdateDTO, BindingResult bindingResult, @PathVariable Long localId, Model model) {
+        if (bindingResult.hasErrors()) {
             localUpdateDTO.markAsDirty();
-            return showUpdateForm(localId, localUpdateDTO, bindResult, model);
+            model.addAttribute("localUpdateRequestDTO", localUpdateDTO);
+            model.addAttribute("bindingResult", bindingResult);
+            return showUpdateForm(localId, localUpdateDTO, bindingResult, model);
         }
 
         Local existingLocal = localRepository.findById(localId).orElseThrow(NotFoundException::new);

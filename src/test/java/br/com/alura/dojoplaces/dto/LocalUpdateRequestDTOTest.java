@@ -4,6 +4,7 @@ import br.com.alura.dojoplaces.entity.Local;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import br.com.alura.dojoplaces.validator.LocalUpdateValidator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,9 +30,8 @@ class LocalUpdateRequestDTOTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // TODO: adicionar display names
-
     @Test
+    @DisplayName("Should not have validation errors when local does not exist by code")
     public void localUpdateForm__when_local_does_not_exist_by_code() {
         LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO(
                 "Name",
@@ -51,6 +51,7 @@ class LocalUpdateRequestDTOTest {
     }
 
     @Test
+    @DisplayName("Should have validation errors when local does exist by code")
     public void localUpdateForm__when_local_does_exist_by_code() {
         LocalUpdateRequestDTO localUpdateRequestDTO = new LocalUpdateRequestDTO(
                 "Name",
