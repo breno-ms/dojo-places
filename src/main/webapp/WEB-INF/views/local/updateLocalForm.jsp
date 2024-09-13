@@ -30,8 +30,30 @@
         <form:errors path="city"/>
     </div>
     <div>
+        <label for="cep">CEP:</label>
+        <form:input id="cep" path="cep" maxlength="8" required="true"/>
+        <form:errors path="cep"/>
+    </div>
+    <div>
         <button type="submit">Atualizar</button>
     </div>
 </form:form>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const cepInput = document.getElementById("cep");
+
+        cepInput.addEventListener("input", (e) => {
+            e.preventDefault();
+            const cep = cepInput.value;
+            fetch('https://viacep.com.br/ws/'+ cep +'/json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('city').value = data.localidade
+                    document.getElementById('neighbourhood').value = data.logradouro
+                })
+                .catch(err => console.log(err));
+        })
+    })
+</script>
 </html>

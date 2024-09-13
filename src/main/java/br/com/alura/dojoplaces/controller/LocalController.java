@@ -9,14 +9,26 @@ import br.com.alura.dojoplaces.repository.LocalRepository;
 import br.com.alura.dojoplaces.validator.LocalCreateValidator;
 import br.com.alura.dojoplaces.validator.LocalUpdateValidator;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 @Controller
 @RequestMapping("/form")

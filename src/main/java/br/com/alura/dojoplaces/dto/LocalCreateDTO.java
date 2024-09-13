@@ -28,6 +28,10 @@ public class LocalCreateDTO {
     @Size(max = 100, message = "City must have a maximum of 100 characters.")
     private String city;
 
+    @NotBlank
+    @Size(max = 8, message = "CEP must have a maximum of 8 characters.")
+    private String cep;
+
     private boolean isDirty;
 
     public LocalCreateDTO() {
@@ -79,6 +83,14 @@ public class LocalCreateDTO {
 
     public void setCity(@NotBlank @Size(max = 100, message = "City must have a maximum of 100 characters.") String city) {
         this.city = city;
+    }
+
+    public @NotBlank @Size(max = 8, message = "CEP must have a maximum of 8 characters.") String getCep() {
+        return cep;
+    }
+
+    public void setCep(@NotBlank @Size(max = 8, message = "CEP must have a maximum of 8 characters.") String cep) {
+        this.cep = cep;
     }
 
     public void markAsDirty() {

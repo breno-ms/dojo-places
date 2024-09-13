@@ -31,6 +31,8 @@ class LocalUpdateValidatorTest {
     }
 
     // TODO: adicionar display names
+    // TODO: modificar os nomes dos métodos para nomes mais descritivos
+    // TODO: cenários positivos e negativos de teste
 
     @Test
     void validate__should_pass_validation_when_code_is_unique_or_same_record() {
