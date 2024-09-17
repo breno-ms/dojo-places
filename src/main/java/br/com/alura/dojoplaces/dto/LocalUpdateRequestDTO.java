@@ -1,10 +1,9 @@
 package br.com.alura.dojoplaces.dto;
 
+import br.com.alura.dojoplaces.entity.Local;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.util.Objects;
 
 public class LocalUpdateRequestDTO {
 
@@ -33,14 +32,23 @@ public class LocalUpdateRequestDTO {
 
     private boolean isDirty;
 
+    @Deprecated
     public LocalUpdateRequestDTO() {
     }
 
-    public LocalUpdateRequestDTO(String name, String code, String neighborhood, String city) {
+    public LocalUpdateRequestDTO(String name, String code, String neighborhood, String city, String cep) {
         this.name = name;
         this.code = code;
         this.neighbourhood = neighborhood;
         this.city = city;
+        this.cep = cep;
+    }
+
+    public LocalUpdateRequestDTO(Local local) {
+        this.name = local.getName();
+        this.code = local.getCode();
+        this.neighbourhood = local.getNeighbourhood();
+        this.city = local.getCity();
     }
 
     public Long getId() {
@@ -97,19 +105,6 @@ public class LocalUpdateRequestDTO {
 
     public boolean isDirty() {
         return this.isDirty;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LocalUpdateRequestDTO that = (LocalUpdateRequestDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && Objects.equals(neighbourhood, that.neighbourhood) && Objects.equals(city, that.city);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, code, neighbourhood, city);
     }
 
 }

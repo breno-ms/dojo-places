@@ -3,6 +3,7 @@ package br.com.alura.dojoplaces.validator;
 import br.com.alura.dojoplaces.dto.LocalCreateDTO;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,16 +28,10 @@ class LocalCreateValidatorTest {
         errors = mock(Errors.class);
     }
 
-    // TODO: adicionar display names
-    // TODO: modificar os nomes dos métodos para nomes mais descritivos
-    // TODO: cenários positivos e negativos de teste
-
     @Test
-    void validate__should_pass_validation_when_code_is_unique() {
-        String uniqueCode = "123456";
-
-        LocalCreateDTO localCreateDTO = new LocalCreateDTO();
-        localCreateDTO.setCode(uniqueCode);
+    @DisplayName("Should not have validation errors when the local code is unique and valid")
+    void validate__should_not_have_validation_errors_when_local_code_is_unique_and_valid() {
+        LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City", "123");
 
         when(localRepository.existsByCode(localCreateDTO.getCode())).thenReturn(false);
 
@@ -46,11 +41,9 @@ class LocalCreateValidatorTest {
     }
 
     @Test
-    void validate__should_reject_validation_when_code_already_exists() {
-        String duplicateCode = "123456";
-
-        LocalCreateDTO localCreateDTO = new LocalCreateDTO();
-        localCreateDTO.setCode(duplicateCode);
+    @DisplayName("Should have validation errors when the local code already exists")
+    void validate__should_have_local_already_exists_error_when_local_code_already_exists() {
+        LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City", "123");
 
         when(localRepository.existsByCode(localCreateDTO.getCode())).thenReturn(true);
 

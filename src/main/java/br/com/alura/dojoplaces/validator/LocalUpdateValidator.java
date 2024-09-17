@@ -30,7 +30,7 @@ public class LocalUpdateValidator implements Validator {
         String code = localUpdateRequestDTO.getCode();
         Long id = localUpdateRequestDTO.getId();
 
-        if (localRepository.findByCodeAndIdNot(code, id).isPresent()) {
+        if (localRepository.existsByCodeAndIdNot(code, id)) {
             errors.rejectValue("code", "error.local.already.exists", "Já existe um local com este código");
         }
     }

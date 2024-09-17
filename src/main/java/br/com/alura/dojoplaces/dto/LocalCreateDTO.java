@@ -5,11 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.util.Objects;
-
 public class LocalCreateDTO {
-
-    private Long id;
 
     @NotBlank
     @Size(max = 100, message = "Name must have a maximum of 100 characters.")
@@ -37,11 +33,12 @@ public class LocalCreateDTO {
     public LocalCreateDTO() {
     }
 
-    public LocalCreateDTO(String name, String code, String neighborhood, String city) {
+    public LocalCreateDTO(String name, String code, String neighborhood, String city, String cep) {
         this.name = name;
         this.code = code;
         this.neighbourhood = neighborhood;
         this.city = city;
+        this.cep = cep;
     }
 
     public Local toModel() {
@@ -99,28 +96,6 @@ public class LocalCreateDTO {
 
     public boolean isDirty() {
         return this.isDirty;
-    }
-
-    public Local createLocalFromDTO() {
-        return new Local(
-                this.name,
-                this.code,
-                this.neighbourhood,
-                this.city
-        );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LocalCreateDTO that = (LocalCreateDTO) o;
-        return isDirty == that.isDirty && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(code, that.code) && Objects.equals(neighbourhood, that.neighbourhood) && Objects.equals(city, that.city);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, code, neighbourhood, city, isDirty);
     }
 
 }

@@ -38,7 +38,7 @@ public class LocalControllerTest {
 
     @Test
     @DisplayName("Should show the list of locals successfully")
-    public void showList__should_show_list_of_locals_successfully() throws Exception {
+    public void showList__should_show_a_list_of_all_locals_successfully() throws Exception {
         Local local = new Local("Name", "123", "Neighbourhood", "City");
         localRepository.save(local);
 
@@ -47,7 +47,7 @@ public class LocalControllerTest {
         mockMvc.perform(get("/form/list"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("/local/listLocal"))
-                .andExpect(model().attribute("locais", locals));
+                .andExpect(model().attribute("locals", locals));
     }
 
     @Test
@@ -61,23 +61,24 @@ public class LocalControllerTest {
 
     @Test
     @DisplayName("Should create a local successfully")
-    public void submitForm__should_submit_create_dto_form_successfully() throws Exception {
-        LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City");
+    public void submitForm__should_create_a_local_successfully() throws Exception {
+        LocalCreateDTO localCreateDTO = new LocalCreateDTO("Name", "Code", "Neighbourhood", "City", "123");
 
         mockMvc.perform(post("/form/create")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("name", localCreateDTO.getName())
                         .param("code", localCreateDTO.getCode())
                         .param("city", localCreateDTO.getCity())
-                        .param("neighbourhood", localCreateDTO.getNeighbourhood()))
+                        .param("neighbourhood", localCreateDTO.getNeighbourhood())
+                        .param("cep", "123"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/form/list"));
     }
 
     @Test
     @DisplayName("Should return errors when creating a local with invalid data")
-    public void submitForm__should_return_errors_when_data_is_invalid() throws Exception {
-        LocalCreateDTO localCreateDTO = new LocalCreateDTO("", "", "", "");
+    public void submitForm__should_have_errors_when_data_is_invalid() throws Exception {
+        LocalCreateDTO localCreateDTO = new LocalCreateDTO("", "", "", "", "");
 
         mockMvc.perform(post("/form/create")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -91,8 +92,26 @@ public class LocalControllerTest {
     }
 
     @Test
+    @DisplayName("Should return to register form when trying to create a local with an existing code")
+    public void submitForm__should_return_to_register_form_when_trying_to_create_a_local_with_an_existing_code() throws Exception {
+        Local existingLocal = new Local("Existing Name", "123", "Existing Neighbourhood", "Existing City");
+        localRepository.save(existingLocal);
+
+        mockMvc.perform(post("/form/create")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("code", "123")
+                        .param("name", "Name")
+                        .param("city", "City")
+                        .param("neighbourhood", "Neighbourhood")
+                        .param("cep", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/local/registerLocalForm"))
+                .andExpect(model().attributeHasFieldErrors("localCreateDTO", "code"));
+    }
+
+    @Test
     @DisplayName("Should return a 404 error on trying to update a local that doesn't exist")
-    public void editForm__should_return_local_not_found_error_on_update_form() throws Exception {
+    public void editForm__should_return_local_not_found_error_when_trying_to_update_a_local_that_doesnt_exist() throws Exception {
         Long localId = 1L;
 
         mockMvc.perform(get("/form/update/{localId}", localId))
@@ -113,14 +132,15 @@ public class LocalControllerTest {
                         .param("code", "456")
                         .param("name", "Updated Name")
                         .param("city", "Updated City")
-                        .param("neighbourhood", "Updated Neighbourhood"))
+                        .param("neighbourhood", "Updated Neighbourhood")
+                        .param("cep", "123"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/form/update/" + localId));
+                .andExpect(redirectedUrl("/form/list"));
     }
 
     @Test
     @DisplayName("Should return errors when updating a local with invalid data")
-    public void editForm__should_return_errors_when_data_is_invalid() throws Exception {
+    public void editForm__should_have_errors_when_trying_to_edit_a_local_with_invalid_data() throws Exception {
         Local local = new Local("Name", "123", "Neighbourhood", "City");
         localRepository.save(local);
 
@@ -138,25 +158,8 @@ public class LocalControllerTest {
     }
 
     @Test
-    @DisplayName("Should return an error when trying to create a local with an existing code")
-    public void submitForm__should_return_error_when_code_already_exists() throws Exception {
-        Local existingLocal = new Local("Existing Name", "123", "Existing Neighbourhood", "Existing City");
-        localRepository.save(existingLocal);
-
-        mockMvc.perform(post("/form/create")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("code", "123")
-                        .param("name", "Name")
-                        .param("city", "City")
-                        .param("neighbourhood", "Neighbourhood"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("/local/registerLocalForm"))
-                .andExpect(model().attributeHasFieldErrors("localCreateDTO", "code"));
-    }
-
-    @Test
     @DisplayName("Should return an error when trying to update a local with an existing code")
-    public void editForm__should_return_error_when_code_already_exists() throws Exception {
+    public void editForm__should_have_error_when_trying_to_update_a_local_with_an_existing_code() throws Exception {
         Local existingLocal = new Local("Existing Name", "123", "Existing Neighbourhood", "Existing City");
         localRepository.save(existingLocal);
 
@@ -169,7 +172,8 @@ public class LocalControllerTest {
                         .param("code", "123")
                         .param("name", "Updated Name")
                         .param("city", "Updated City")
-                        .param("neighbourhood", "Updated Neighbourhood"))
+                        .param("neighbourhood", "Updated Neighbourhood")
+                        .param("cep", "123"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("/local/updateLocalForm"))
                 .andExpect(model().attributeHasFieldErrors("localUpdateRequestDTO", "code"));

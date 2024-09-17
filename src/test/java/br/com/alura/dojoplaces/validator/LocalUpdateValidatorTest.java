@@ -1,16 +1,14 @@
 package br.com.alura.dojoplaces.validator;
 
 import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
-import br.com.alura.dojoplaces.entity.Local;
 import br.com.alura.dojoplaces.repository.LocalRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.validation.Errors;
-
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -30,20 +28,12 @@ class LocalUpdateValidatorTest {
         errors = mock(Errors.class);
     }
 
-    // TODO: adicionar display names
-    // TODO: modificar os nomes dos métodos para nomes mais descritivos
-    // TODO: cenários positivos e negativos de teste
-
     @Test
-    void validate__should_pass_validation_when_code_is_unique_or_same_record() {
-        String code = "123456";
-        Long updateId = 1L;
+    @DisplayName("Should not have validation errors when the local code is unique, valid and belongs to the record that we are updating")
+    void validate__should_not_have_validation_errors_when_code_is_unique_or_belongs_to_the_same_record() {
+        LocalUpdateRequestDTO localUpdateDTO = new LocalUpdateRequestDTO("Name", "Code", "Neighbourhood", "City", "123");
 
-        LocalUpdateRequestDTO localUpdateDTO = new LocalUpdateRequestDTO();
-        localUpdateDTO.setCode(code);
-        localUpdateDTO.setId(updateId);
-
-        when(localRepository.findByCodeAndIdNot(code, updateId)).thenReturn(Optional.empty());
+        when(localRepository.existsByCodeAndIdNot(localUpdateDTO.getCode(), localUpdateDTO.getId())).thenReturn(false);
 
         localUpdateValidator.validate(localUpdateDTO, errors);
 
@@ -51,19 +41,11 @@ class LocalUpdateValidatorTest {
     }
 
     @Test
-    void validate__should_reject_validation_when_code_already_exists_for_different_record() {
-        String code = "123456";
-        Long updateId = 1L;
-        Long existingId = 2L;
+    @DisplayName("Should have validation errors when the local code already exists for a different record")
+    void validate__should_have_validation_errors_when_code_already_exists_for_different_record() {
+        LocalUpdateRequestDTO localUpdateDTO = new LocalUpdateRequestDTO("Name", "Code", "Neighbourhood", "City", "123");
 
-        LocalUpdateRequestDTO localUpdateDTO = new LocalUpdateRequestDTO();
-        localUpdateDTO.setCode(code);
-        localUpdateDTO.setId(updateId);
-
-        Local existingLocal = new Local();
-        existingLocal.setCode(code);
-
-        when(localRepository.findByCodeAndIdNot(code, updateId)).thenReturn(Optional.of(existingLocal));
+        when(localRepository.existsByCodeAndIdNot(localUpdateDTO.getCode(), localUpdateDTO.getId())).thenReturn(true);
 
         localUpdateValidator.validate(localUpdateDTO, errors);
 

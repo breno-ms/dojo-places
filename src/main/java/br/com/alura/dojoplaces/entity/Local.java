@@ -1,14 +1,14 @@
 package br.com.alura.dojoplaces.entity;
 
-import br.com.alura.dojoplaces.dto.LocalResponseDTO;
-import br.com.alura.dojoplaces.dto.LocalUpdateRequestDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity(name = "local")
 public class Local {
@@ -16,11 +16,20 @@ public class Local {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
+    @Size(max = 100, message = "Name must have a maximum of 100 characters.")
     private String name;
+    @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "Code must not contain special characters or spaces.")
+    @Size(max = 100, message = "Code must have a maximum of 100 characters.")
     private String code;
+    @NotBlank
+    @Size(max = 100, message = "Neighbourhood must have a maximum of 100 characters.")
     private String neighbourhood;
+    @NotBlank
+    @Size(max = 100, message = "City must have a maximum of 100 characters.")
     private String city;
-    private LocalDate createdAt;
+    private final LocalDate createdAt = LocalDate.now();
     private LocalDate updatedAt;
 
     @Deprecated
@@ -32,7 +41,6 @@ public class Local {
         this.code = code;
         this.neighbourhood = neighbourhood;
         this.city = city;
-        this.createdAt = LocalDate.now();
     }
 
     public Long getId() {
@@ -79,51 +87,12 @@ public class Local {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    // todo: remover setters e modificar método abaixo para receber os argumentos individualmente
-    public void updateFromDTO(LocalUpdateRequestDTO localCreateDTO) {
-        this.setName(localCreateDTO.getName());
-        this.setCode(localCreateDTO.getCode());
-        this.setNeighbourhood(localCreateDTO.getNeighbourhood());
-        this.setCity(localCreateDTO.getCity());
-        this.setUpdatedAt(LocalDate.now());
-    }
-
-    public LocalUpdateRequestDTO createLocalUpdateRequestDto() {
-        return new LocalUpdateRequestDTO(
-                this.getName(),
-                this.getCode(),
-                this.getNeighbourhood(),
-                this.getCity()
-        );
-    }
-
-    public LocalResponseDTO createLocalResponseDto() {
-        return new LocalResponseDTO(
-                this.id,
-                this.name,
-                this.code,
-                this.neighbourhood,
-                this.city,
-                this.createdAt,
-                this.updatedAt
-        );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Local local = (Local) o;
-        return Objects.equals(name, local.name) && Objects.equals(code, local.code) && Objects.equals(neighbourhood, local.neighbourhood) && Objects.equals(city, local.city) && Objects.equals(createdAt, local.createdAt) && Objects.equals(updatedAt, local.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, code, neighbourhood, city, createdAt, updatedAt);
+    public void update(String name, String code, String neighbourhood, String city) {
+        this.name = name;
+        this.code = code;
+        this.neighbourhood = neighbourhood;
+        this.city = city;
+        this.updatedAt = LocalDate.now();
     }
 
     @Override

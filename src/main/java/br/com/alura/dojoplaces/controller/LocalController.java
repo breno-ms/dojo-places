@@ -9,26 +9,16 @@ import br.com.alura.dojoplaces.repository.LocalRepository;
 import br.com.alura.dojoplaces.validator.LocalCreateValidator;
 import br.com.alura.dojoplaces.validator.LocalUpdateValidator;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
 
 @Controller
 @RequestMapping("/form")
@@ -72,7 +62,7 @@ public class LocalController {
         }
 
         if (!localUpdateRequestDTO.isDirty()) {
-            localUpdateRequestDTO = existingLocal.get().createLocalUpdateRequestDto();
+            localUpdateRequestDTO = new LocalUpdateRequestDTO(existingLocal.get());
         }
 
         model.addAttribute("localId", localId);
@@ -89,6 +79,7 @@ public class LocalController {
             return showRegisterForm(localCreateDTO);
         }
 
+        localCreateDTO.setCode(localCreateDTO.getCode().trim());
         boolean localAlreadyExists = localRepository.existsByCode(localCreateDTO.getCode());
 
         if (localAlreadyExists) {
@@ -113,10 +104,10 @@ public class LocalController {
         }
 
         Local existingLocal = localRepository.findById(localId).orElseThrow(NotFoundException::new);
-        existingLocal.updateFromDTO(localUpdateDTO);
+        existingLocal.update(localUpdateDTO.getName(), localUpdateDTO.getCode().trim(), localUpdateDTO.getNeighbourhood(), localUpdateDTO.getCity());
         localRepository.save(existingLocal);
 
-        return "redirect:/form/update/" + localId;
+        return "redirect:/form/list";
     }
 
     @GetMapping("/list")
@@ -124,18 +115,19 @@ public class LocalController {
         List<Local> locals = localRepository.findAll();
         List<LocalResponseDTO> localsDtos = locals.stream().map(LocalResponseDTO::new).toList();
 
-        model.addAttribute("locais", localsDtos);
+        model.addAttribute("locals", localsDtos);
 
         return "/local/listLocal";
     }
 
-    @PostMapping("/delete")
-    public String deleteLocal(@RequestParam Long localId) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteLocal(@RequestParam Long localId) {
         if (localRepository.existsById(localId)) {
             localRepository.deleteById(localId);
+            return ResponseEntity.ok().build();
         }
 
-        return "redirect:/form/list";
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
 }
